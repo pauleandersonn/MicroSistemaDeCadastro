@@ -1,0 +1,111 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+    <title>Micro Sistema de Cadastro</title>
+</head>
+<body>
+    <div id="app" class="container">
+        <h1>Cadastro de Cargas</h1>
+
+        <form @submit.prevent="registrarCarga">
+            <label for="placa">Placa do Caminhão:</label>
+            <input v-model.trim="placa" type="text" id="placa" required>
+            <p class="erro">{{ placaErro }}</p>
+        
+            <label for="peso_carga">Peso da Carga (toneladas):</label>
+            <input v-model.number="pesoCarga" type="number" id="peso_carga" required>
+            <p class="erro">{{ pesoCargaErro }}</p>
+        
+            <button type="submit">Registrar Caminhão</button>
+        </form>
+
+        <!-- Formulário para cadastrar novo caminhão na entrada -->
+        <h2>Cadastrar Novo Caminhão na Entrada</h2>
+        <form @submit.prevent="cadastrarNovoCaminhao">
+            <label for="placaNovoCaminhao">Placa do Caminhão:</label>
+            <input v-model.trim="placaNovoCaminhao" type="text" id="placaNovoCaminhao" required>
+            <p class="erro">{{ placaErroNovoCaminhao }}</p>
+        
+            <button type="submit">Cadastrar Novo Caminhão</button>
+        </form>
+        
+        <!-- Relatório de Entrada -->
+        <div v-if="relatorioEntrada.length > 0">
+            <h2>Relatório de Entrada</h2>
+            <ul>
+                <li v-for="(entrada, index) in relatorioEntrada" :key="index">
+                    Placa: {{ entrada.placa }}, Peso: {{ entrada.peso_carga }} toneladas
+                </li>
+            </ul>
+        </div>
+
+        <div id="mensagensErro">
+            <p class="erro" v-if="erroGeral">{{ erroGeral }}</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                placa: '',
+                pesoCarga: null,
+                placaErro: '',
+                pesoCargaErro: '',
+                placaNovoCaminhao: '',
+                placaErroNovoCaminhao: '',
+                relatorioEntrada: [],
+                erroGeral: ''
+            },
+            methods: {
+                validarPlaca: function(placa) {
+                    return /^([A-Z]{3}-\d{4}|[A-Z]{3}\d[A-Z]\d{2})$/.test(placa);
+                },
+                registrarCarga: function() {
+                    this.placaErro = '';
+                    this.pesoCargaErro = '';
+
+                    if (!this.validarPlaca(this.placa)) {
+                        this.placaErro = 'Placa inválida. Formato: AAA-1111 ou ABC1D23';
+                        return;
+                    }
+
+                    this.relatorioEntrada.push({
+                        placa: this.placa,
+                        peso_carga: parseFloat(this.pesoCarga)
+                    });
+
+                    this.limparCampos();
+                },
+                cadastrarNovoCaminhao: function() {
+                    this.placaErroNovoCaminhao = '';
+
+                    if (!this.validarPlaca(this.placaNovoCaminhao)) {
+                        this.placaErroNovoCaminhao = 'Placa inválida. Formato: AAA-1111 ou ABC1D23';
+                        return;
+                    }
+
+                    // Aqui você pode prosseguir com o restante do código para cadastrar o novo caminhão na entrada
+                    // ...
+
+                    this.limparCampos();
+                },
+                limparCampos: function() {
+                    this.placa = '';
+                    this.pesoCarga = null;
+                    this.placaNovoCaminhao = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
